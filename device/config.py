@@ -1,3 +1,2 @@
 MESSAGE_TIMESPAN = 2000
 SIMULATED_DATA = False
-DEVICE_FILE = r"/sys/bus/w1/devices/28-021562c810ff/w1_slave"

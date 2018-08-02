@@ -54,7 +54,7 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
 telemetry = Telemetry()
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
     print ( "You need to provide the device connection string as command line arguments." )
     telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not provided")
     sys.exit(0)
@@ -67,6 +67,7 @@ def is_correct_connection_string():
         return False
 
 CONNECTION_STRING = sys.argv[1]
+DEVICE_FILE = sys.argv[2]
 
 if not is_correct_connection_string():
     print ( "Device connection string is not correct." )
@@ -188,7 +189,7 @@ def iothub_client_run():
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
         if not config.SIMULATED_DATA:
-            sensor = Sensor(config.DEVICE_FILE)
+            sensor = Sensor(DEVICE_FILE)
         else:
             sensor = SensorSimulator()
 
