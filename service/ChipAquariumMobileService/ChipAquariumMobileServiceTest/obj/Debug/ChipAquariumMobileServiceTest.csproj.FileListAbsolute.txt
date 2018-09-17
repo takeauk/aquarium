@@ -1,6 +1,0 @@
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\bin\Debug\ChipAquariumMobileServiceTest.exe.config
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\bin\Debug\ChipAquariumMobileServiceTest.exe
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\bin\Debug\ChipAquariumMobileServiceTest.pdb
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\obj\Debug\ChipAquariumMobileServiceTest.csprojResolveAssemblyReference.cache
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\obj\Debug\ChipAquariumMobileServiceTest.exe
-C:\Users\main\Source\Repos\Aquarium\service\ChipAquariumMobileService\ChipAquariumMobileServiceTest\obj\Debug\ChipAquariumMobileServiceTest.pdb
