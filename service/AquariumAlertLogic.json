@@ -1,0 +1,166 @@
+
+{
+    "$connections": {
+        "value": {
+            "servicebus": {
+                "connectionId": "/subscriptions/c897e8fa-180c-4e3a-9432-262aace43077/resourceGroups/Aquarium/providers/Microsoft.Web/connections/servicebus",
+                "connectionName": "servicebus",
+                "id": "/subscriptions/c897e8fa-180c-4e3a-9432-262aace43077/providers/Microsoft.Web/locations/japanwest/managedApis/servicebus"
+            },
+            "smtp": {
+                "connectionId": "/subscriptions/c897e8fa-180c-4e3a-9432-262aace43077/resourceGroups/Aquarium/providers/Microsoft.Web/connections/smtp",
+                "connectionName": "smtp",
+                "id": "/subscriptions/c897e8fa-180c-4e3a-9432-262aace43077/providers/Microsoft.Web/locations/japanwest/managedApis/smtp"
+            }
+        }
+    },
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "JSON_の解析": {
+                "inputs": {
+                    "content": "@triggerBody()?['ContentData']",
+                    "schema": {
+                        "properties": {
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "measuredValue": {
+                                "type": "number"
+                            },
+                            "measurementTarget": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {},
+                "type": "ParseJson"
+            },
+            "スイッチ": {
+                "cases": {
+                    "ケース": {
+                        "actions": {
+                            "条件": {
+                                "actions": {
+                                    "メールの送信": {
+                                        "inputs": {
+                                            "body": {
+                                                "Body": "High temperature detected.\n\ndeviceId:@{body('JSON_の解析')?['deviceId']}\nvalue:@{body('JSON_の解析')?['measuredValue']}",
+                                                "From": "main@takeauk.com",
+                                                "Subject": "AquariumLogic notify",
+                                                "To": "takeauk.main@gmail.com"
+                                            },
+                                            "host": {
+                                                "connection": {
+                                                    "name": "@parameters('$connections')['smtp']['connectionId']"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "path": "/SendEmailV2"
+                                        },
+                                        "runAfter": {},
+                                        "type": "ApiConnection"
+                                    }
+                                },
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "greaterOrEquals": [
+                                                "@body('JSON_の解析')?['measuredValue']",
+                                                28
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "runAfter": {},
+                                "type": "If"
+                            }
+                        },
+                        "case": "temperature"
+                    },
+                    "ケース_2": {
+                        "actions": {
+                            "条件_2": {
+                                "actions": {
+                                    "メールの送信_2": {
+                                        "inputs": {
+                                            "body": {
+                                                "Body": "Level out of range.\n\ndeviceId:@{body('JSON_の解析')?['deviceId']}",
+                                                "From": "main@takeauk.com",
+                                                "Subject": "AquariumLogic notify",
+                                                "To": "takeauk.main@gmail.com"
+                                            },
+                                            "host": {
+                                                "connection": {
+                                                    "name": "@parameters('$connections')['smtp']['connectionId']"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "path": "/SendEmailV2"
+                                        },
+                                        "runAfter": {},
+                                        "type": "ApiConnection"
+                                    }
+                                },
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@body('JSON_の解析')?['measuredValue']",
+                                                1
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "runAfter": {},
+                                "type": "If"
+                            }
+                        },
+                        "case": "level"
+                    }
+                },
+                "default": {
+                    "actions": {}
+                },
+                "expression": "@body('JSON_の解析')?['measurementTarget']",
+                "runAfter": {
+                    "JSON_の解析": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Switch"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "When_a_message_is_received_in_a_queue_(auto-complete)": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['servicebus']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/@{encodeURIComponent(encodeURIComponent('watertemperature'))}/messages/head",
+                    "queries": {
+                        "queueType": "Main"
+                    }
+                },
+                "recurrence": {
+                    "frequency": "Minute",
+                    "interval": 10
+                },
+                "type": "ApiConnection"
+            }
+        }
+    }
+}
