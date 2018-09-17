@@ -35,7 +35,6 @@ MESSAGE_SWITCH = True
 TWIN_CONTEXT = 0
 SEND_REPORTED_STATE_CONTEXT = 0
 METHOD_CONTEXT = 0
-TEMPERATURE_ALERT = 30.0
 
 # global counters
 RECEIVE_CALLBACKS = 0
@@ -54,7 +53,7 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
 telemetry = Telemetry()
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 4:
     print ( "You need to provide the device connection string as command line arguments." )
     telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not provided")
     sys.exit(0)
@@ -68,13 +67,14 @@ def is_correct_connection_string():
 
 CONNECTION_STRING = sys.argv[1]
 DEVICE_FILE = sys.argv[2]
+DEVICE_NAME = sys.argv[3]
 
 if not is_correct_connection_string():
     print ( "Device connection string is not correct." )
     telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not correct.")
     sys.exit(0)
 
-MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\",\"temperature\": %f}"
+MSG_TXT = "{\"device\": \"%s\",\"measurementTarget\": \"temperature\",\"temperature\": %3.1f,\"unit\": \"celsius\"}"
 
 def receive_message_callback(message, counter):
     global RECEIVE_CALLBACKS
@@ -200,7 +200,7 @@ def iothub_client_run():
                 # send a few messages every minute
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
                 temperature = sensor.read_temperature()
-                msg_txt_formatted = MSG_TXT % (temperature)
+                msg_txt_formatted = MSG_TXT % (DEVICE_NAME, temperature)
                 print (msg_txt_formatted)
                 message = IoTHubMessage(msg_txt_formatted)
                 # optional: assign ids
@@ -208,7 +208,6 @@ def iothub_client_run():
                 message.correlation_id = "correlation_%d" % MESSAGE_COUNT
                 # optional: assign properties
                 prop_map = message.properties()
-                prop_map.add("temperatureAlert", "true" if temperature > TEMPERATURE_ALERT else "false")
 
                 client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
