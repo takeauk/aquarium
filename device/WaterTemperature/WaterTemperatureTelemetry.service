@@ -1,10 +1,10 @@
 [Unit]
 Description = Telemetry sensor data.
 After=local-fs.target network-online.target
-ConditionPathExists=/opt/telemetry/bin
+ConditionPathExists=/opt/WaterTemperatureTelemetry/bin
 
 [Service]
-ExecStart=/opt/telemetry/bin/run.sh
+ExecStart=/opt/WaterTemperatureTelemetry/bin/run.sh
 Restart=no
 Type=simple
 
