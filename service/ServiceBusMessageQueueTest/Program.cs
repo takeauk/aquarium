@@ -61,7 +61,7 @@ namespace ServiceBusMessageQueueTest
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             // Process the message
-            Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+            Console.WriteLine($"Received message: At:{DateTime.Now:yyyy/MM/dd HH:mm:ss} SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
 
             // Complete the message so that it is not received again.
             // This can be done only if the queueClient is created in ReceiveMode.PeekLock mode (which is default).
