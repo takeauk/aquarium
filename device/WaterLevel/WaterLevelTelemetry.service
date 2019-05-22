@@ -1,0 +1,13 @@
+[Unit]
+Description = Telemetry water level sensor data.
+After=local-fs.target network-online.target
+ConditionPathExists=/opt/water_level/bin
+
+[Service]
+ExecStart=/opt/water_level/bin/run.sh
+Restart=no
+Type=simple
+
+
+[Install]
+WantedBy=multi-user.target

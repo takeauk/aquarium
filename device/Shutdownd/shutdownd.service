@@ -1,0 +1,13 @@
+[Unit]
+Description = Shutdown daemon.
+After=local-fs.target
+ConditionPathExists=/opt/shutdownd/bin
+
+[Service]
+ExecStart=/opt/shutdownd/bin/run.sh
+Restart=always
+Type=simple
+
+
+[Install]
+WantedBy=multi-user.target
