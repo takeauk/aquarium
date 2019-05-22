@@ -74,7 +74,7 @@ if not is_correct_connection_string():
     telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not correct.")
     sys.exit(0)
 
-MSG_TXT = "{\"device\": \"%s\",\"measurementTarget\": \"temperature\",\"temperature\": %3.1f,\"unit\": \"celsius\"}"
+MSG_TXT = "{\"device\": \"%s\",\"measurementTarget\": \"temperature\",\"temperature\": %3.1f,\"before_temperature\": %3.1f,\"unit\": \"celsius\"}"
 
 def receive_message_callback(message, counter):
     global RECEIVE_CALLBACKS
@@ -194,13 +194,14 @@ def iothub_client_run():
             sensor = SensorSimulator()
 
         telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
+        before_temperature = 0
         while True:
             global MESSAGE_COUNT,MESSAGE_SWITCH
             if MESSAGE_SWITCH:
                 # send a few messages every minute
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
                 temperature = sensor.read_temperature()
-                msg_txt_formatted = MSG_TXT % (DEVICE_NAME, temperature)
+                msg_txt_formatted = MSG_TXT % (DEVICE_NAME, temperature, before_temperature)
                 print (msg_txt_formatted)
                 message = IoTHubMessage(msg_txt_formatted)
                 # optional: assign ids
@@ -214,6 +215,7 @@ def iothub_client_run():
 
                 status = client.get_send_status()
                 print ( "Send status: %s" % status )
+                before_temperature = temperature
                 MESSAGE_COUNT += 1
             time.sleep(config.MESSAGE_TIMESPAN / 1000.0)
 
